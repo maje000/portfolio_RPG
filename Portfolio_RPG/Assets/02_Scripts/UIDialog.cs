@@ -10,6 +10,13 @@ public class UIDialog : MonoBehaviour
     [SerializeField] Image background;
     [SerializeField] TextMeshProUGUI text;
 
+    private void Start()
+    {
+        canvasGroupHandle.alpha = 0f;
+        canvasGroupHandle.interactable = false;
+        canvasGroupHandle.blocksRaycasts = false;
+    }
+
     public string Text
     {
         set => text.text = value;

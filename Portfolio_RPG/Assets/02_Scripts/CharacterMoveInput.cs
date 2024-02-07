@@ -8,6 +8,7 @@ using UnityEngine;
 public class CharacterMoveInput : MonoBehaviour
 {
     Rigidbody rigid;
+    Camera mainCam;
 
     bool isActive = false;
     public bool Active
@@ -19,10 +20,14 @@ public class CharacterMoveInput : MonoBehaviour
     float jumpPow = 10f;
     Vector3 mousePositionLastFrame = Vector3.zero;
 
+    Vector2 horizontal_InputDirection;
+    Vector3 characterMoveDirection;
+
     private void Start()
     {
         isActive = true;
         rigid = GetComponent<Rigidbody>();
+        mainCam = Camera.main;
     }
 
     /// <summary>
@@ -37,10 +42,12 @@ public class CharacterMoveInput : MonoBehaviour
         }
 
         // Apply rotation inputKey
-        CharacterRotate();
+        //CharacterRotate();
 
         // Apply horizontal inputKey
         CharacterHorizontalMove();
+
+        CharacterRotateToMoveDirection();
 
         // Apply JumpKey
         if (Input.GetKeyDown(KeyCode.Space))
@@ -88,37 +95,55 @@ public class CharacterMoveInput : MonoBehaviour
         }
     }
 
+    private void CharacterRotateToMoveDirection()
+    {
+        if (characterMoveDirection != Vector3.zero)
+        {
+            Quaternion toRotation = Quaternion.LookRotation(characterMoveDirection, Vector3.up);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, 720 * Time.deltaTime);
+        }
+    }
+
     /// <summary>
     /// 키보드의 입력을 체크하여 캐릭터를 이동시킴
     /// </summary>
     private void CharacterHorizontalMove()
     {
+        horizontal_InputDirection = Vector2.zero;
         // Move forward
         if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
         {
-            Vector3 forwardMoveDistance = transform.forward * moveSpeed * Time.deltaTime;
-            transform.position += forwardMoveDistance;
+            horizontal_InputDirection.y++;
         }
 
         // Move back
         if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
         {
-            Vector3 backMoveDistance = transform.forward * moveSpeed * Time.deltaTime;
-            transform.position -= backMoveDistance;
+            horizontal_InputDirection.y--;
         }
 
         // Move right
         if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
         {
-            Vector3 rightMoveDistance = transform.right * moveSpeed * Time.deltaTime;
-            transform.position += rightMoveDistance;
+            horizontal_InputDirection.x++;
         }
 
         // Move left
         if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
         {
-            Vector3 leftMoveDistance = transform.right * moveSpeed * Time.deltaTime;
-            transform.position -= leftMoveDistance;
+            horizontal_InputDirection.x--;
         }
+
+        Vector3 camForwradDirection = mainCam.transform.forward;
+        camForwradDirection.y = 0;
+        Vector3 forwardMoveDirection = horizontal_InputDirection.y * camForwradDirection;
+
+        Vector3 camRightDirection = mainCam.transform.right;
+        camRightDirection.y = 0;
+        Vector3 rightMoveDirection = horizontal_InputDirection.x * camRightDirection;
+
+        characterMoveDirection = forwardMoveDirection + rightMoveDirection;
+        Vector3 moveDistance = characterMoveDirection.normalized * moveSpeed * Time.deltaTime;
+        transform.position += moveDistance;
     }
 }

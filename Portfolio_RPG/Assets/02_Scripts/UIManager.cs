@@ -10,6 +10,7 @@ public class UIManager : MonoBehaviour
     public UIDialog uiDialog;
     public MouseRaycastManager mouseRaycastManager;
     public CharacterMoveInput characterMoveInput;
+    Coroutine coDialogHandle;
 
     public static UIManager Instance
     {
@@ -40,7 +41,6 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    Coroutine coDialogHandle;
     public void OpenDialog(string[] scripts)
     {
         int scriptCount = scripts.Length;
