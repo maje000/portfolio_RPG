@@ -758,8 +758,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34a9389b3e352a041a893d79c71d3b23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 543450653234180793}
-  distance: {x: 0, y: 5, z: 15}
+  _target: {fileID: 543450653234180793}
+  distance: {x: 0, y: 8.75, z: 15}
+  fixedAngle: 30
 --- !u!1 &1088541812
 GameObject:
   m_ObjectHideFlags: 0
@@ -2246,6 +2247,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d87099fa15047f4e930fda2bda89859, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  velocity: 0
 --- !u!1 &5874820409938901645
 GameObject:
   m_ObjectHideFlags: 0
