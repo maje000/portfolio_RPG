@@ -1,14 +1,55 @@
+using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 /// <summary>
 /// 유저의 입력값에 반응하여 캐릭터를 이동
 /// </summary>
-public class CharacterMoveInput : MonoBehaviour
+public class CharacterMoveInput : NetworkBehaviour
 {
     Rigidbody rigid;
     Camera mainCam;
+
+    public TextMeshPro playerNameText;
+    public GameObject floatingInfo;
+
+    private SceneScript sceneScript;
+
+    private void Awake()
+    {
+        sceneScript = FindObjectOfType<SceneScript>();
+    }
+
+    [Command]
+    public void CmdSendPlayerMessage()
+    {
+        if (sceneScript)
+            sceneScript.statusText = $"{playerName} says hello {Random.Range(10, 99)}";
+    }
+
+    [SyncVar(hook = nameof(OnNameChanged))]
+    public string playerName;
+
+    void OnNameChanged(string _Old, string _New)
+    {
+        playerNameText.text = playerName;
+    }
+
+    public override void OnStartLocalPlayer()
+    {
+        sceneScript.playerScript = this;
+        string name = "player" + Random.Range(100, 999);
+        CmdSetupPlayer(name);
+    }
+
+    [Command]
+    public void CmdSetupPlayer(string _name)
+    {
+        playerName = _name;
+        sceneScript.statusText = $"{playerName} joined.";
+    }
 
     bool isActive = false;
     public bool Active
@@ -35,7 +76,7 @@ public class CharacterMoveInput : MonoBehaviour
     /// </summary>
     void Update()
     {
-        if (!isActive)
+        if (!isActive || !isLocalPlayer)
         {
             // CharacterMoveInput will be rejected
             return;
